@@ -1,0 +1,148 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Telegram Chat API",
+        "description": "API для взаимодействия с Telegram ботом",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "https://telegramchat.loc/",
+            "description": "Localhost API server"
+        }
+    ],
+    "paths": {
+        "/api/v1/messages": {
+            "get": {
+                "tags": [
+                    "Сообщения"
+                ],
+                "summary": "Получение списка сообщений",
+                "description": "Получение списка сообщений.",
+                "operationId": "6e2b060d9ca7900da7d6994cb985e4e9",
+                "responses": {
+                    "200": {
+                        "description": "Список сообщений"
+                    }
+                }
+            }
+        },
+        "/api/v1/messages/{id}/reply": {
+            "post": {
+                "tags": [
+                    "Сообщения"
+                ],
+                "summary": "Отправка ответа гостю",
+                "description": "Отправка ответа гостю.",
+                "operationId": "8e00e5f099e2694cd594be72511638d9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID сообщения, на которое отправляется ответ",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "text"
+                                ],
+                                "properties": {
+                                    "text": {
+                                        "type": "string",
+                                        "example": "Ваш ответ"
+                                    },
+                                    "with_reply": {
+                                        "description": "Если указано (1), сообщение отправляется как ответ в Telegram",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ответ успешно отправлен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "response": {
+                                            "type": "object",
+                                            "example": {
+                                                "message_id": 12345,
+                                                "date": 1700000000
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Поле 'text' обязательно"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Сообщение не найдено",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Сообщение не найдено"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Сообщения",
+            "description": "Сообщения"
+        }
+    ]
+}

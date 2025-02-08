@@ -7,6 +7,19 @@ use Illuminate\Http\Request;
 use App\Models\Message;
 use App\Services\TelegramService;
 
+/**
+ * @OA\OpenApi(
+ *     @OA\Info(
+ *         title="Telegram Chat API",
+ *         version="1.0.0",
+ *         description="API для взаимодействия с Telegram ботом"
+ *     ),
+ *     @OA\Server(
+ *         url="https://telegramchat.loc/",
+ *         description="Localhost API server"
+ *     )
+ * )
+ */
 class MessageController extends Controller
 {
     protected $telegramService;
@@ -19,6 +32,15 @@ class MessageController extends Controller
     /**
      * Получение списка сообщений.
      *
+     * @OA\Get(
+     *     path="/api/v1/messages",
+     *     summary="Получение списка сообщений",
+     *     tags={"Сообщения"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Список сообщений"
+     *     )
+     * )
      */
     public function index()
     {
@@ -30,6 +52,56 @@ class MessageController extends Controller
     /**
      * Отправка ответа гостю.
      *
+     * @OA\Post(
+     *     path="/api/v1/messages/{id}/reply",
+     *     summary="Отправка ответа гостю",
+     *     tags={"Сообщения"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID сообщения, на которое отправляется ответ",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"text"},
+     *             @OA\Property(property="text", type="string", example="Ваш ответ"),
+     *             @OA\Property(
+     *                 property="with_reply",
+     *                 type="integer",
+     *                 nullable=true,
+     *                 example=1,
+     *                 description="Если указано (1), сообщение отправляется как ответ в Telegram"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Ответ успешно отправлен",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(property="response", type="object", example={"message_id": 12345, "date": 1700000000})
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Ошибка валидации",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Поле 'text' обязательно")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Сообщение не найдено",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Сообщение не найдено")
+     *         )
+     *     )
+     * )
      */
     public function reply(Request $request, int $id)
     {
@@ -42,7 +114,15 @@ class MessageController extends Controller
 
         $replyToMessageId = null;
 
-        $message = Message::findOrFail($id);
+        $message = Message::find($id);
+
+        if (!$message) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Сообщение не найдено'
+            ], 404);
+        }
+
 
         if ($request->input('with_reply', null)) $replyToMessageId = $message->telegram_message_id;
 
