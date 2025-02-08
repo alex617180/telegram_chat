@@ -15,6 +15,7 @@ class Message extends Model
     protected $fillable = [
         'telegram_chat_id',
         'telegram_message_id',
+        'telegram_first_name',
         'user_id',
         'text',
         'datetime',
