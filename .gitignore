@@ -31,4 +31,6 @@ auth.json
 
 # -----------------------------
 /.osp
+/.vscode
+/.idea
 composer.lock
