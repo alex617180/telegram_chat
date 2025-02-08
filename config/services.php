@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'telegram' => [
+        'token' => env('TELEGRAM_BOT_TOKEN'),
+        'poll_timeout' => env('TELEGRAM_POLL_TIMEOUT', 30),
+    ],
+
 ];
