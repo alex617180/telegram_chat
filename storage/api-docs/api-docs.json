@@ -18,11 +18,167 @@
                     "Сообщения"
                 ],
                 "summary": "Получение списка сообщений",
-                "description": "Получение списка сообщений.",
                 "operationId": "6e2b060d9ca7900da7d6994cb985e4e9",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Номер страницы (по умолчанию 1)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Количество сообщений на странице (по умолчанию 50, максимум 1000)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 50,
+                            "maximum": 1000
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Список сообщений"
+                        "description": "Список сообщений с пагинацией",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 14
+                                                    },
+                                                    "telegram_chat_id": {
+                                                        "type": "integer",
+                                                        "example": 5975217022
+                                                    },
+                                                    "telegram_message_id": {
+                                                        "type": "integer",
+                                                        "example": 19
+                                                    },
+                                                    "telegram_first_name": {
+                                                        "type": "string",
+                                                        "example": "Alexey",
+                                                        "nullable": true
+                                                    },
+                                                    "datetime": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2025-02-12 07:19:14"
+                                                    },
+                                                    "text": {
+                                                        "type": "string",
+                                                        "example": "HIII!!!"
+                                                    },
+                                                    "is_from_guest": {
+                                                        "type": "boolean",
+                                                        "example": false
+                                                    },
+                                                    "reply_to_message_id": {
+                                                        "type": "integer",
+                                                        "example": 12,
+                                                        "nullable": true
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2025-02-12 12:19:14"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "links": {
+                                            "properties": {
+                                                "first": {
+                                                    "type": "string",
+                                                    "example": "https://telegramchat.loc/api/v1/messages?page=1"
+                                                },
+                                                "last": {
+                                                    "type": "string",
+                                                    "example": "https://telegramchat.loc/api/v1/messages?page=1"
+                                                },
+                                                "prev": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
+                                                "next": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "from": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "path": {
+                                                    "type": "string",
+                                                    "example": "https://telegramchat.loc/api/v1/messages"
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 50
+                                                },
+                                                "to": {
+                                                    "type": "integer",
+                                                    "example": 13
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 13
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": "string",
+                                                                "example": null,
+                                                                "nullable": true
+                                                            },
+                                                            "label": {
+                                                                "type": "string",
+                                                                "example": "&laquo; Previous"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean",
+                                                                "example": false
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -60,9 +216,9 @@
                                         "example": "Ваш ответ"
                                     },
                                     "with_reply": {
-                                        "description": "Если указано (1), сообщение отправляется как ответ в Telegram",
-                                        "type": "integer",
-                                        "example": 1,
+                                        "description": "Если указано true, сообщение отправляется как ответ в Telegram",
+                                        "type": "boolean",
+                                        "example": true,
                                         "nullable": true
                                     }
                                 },
@@ -82,12 +238,31 @@
                                             "type": "string",
                                             "example": "success"
                                         },
-                                        "response": {
-                                            "type": "object",
-                                            "example": {
-                                                "message_id": 12345,
-                                                "date": 1700000000
-                                            }
+                                        "message": {
+                                            "properties": {
+                                                "telegram_message_id": {
+                                                    "type": "integer",
+                                                    "example": 12345
+                                                },
+                                                "chat_id": {
+                                                    "type": "integer",
+                                                    "example": 987654
+                                                },
+                                                "first_name": {
+                                                    "type": "string",
+                                                    "example": "John"
+                                                },
+                                                "text": {
+                                                    "type": "string",
+                                                    "example": "Ваш ответ"
+                                                },
+                                                "datetime": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-02-12 15:30:00"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -95,7 +270,7 @@
                             }
                         }
                     },
-                    "400": {
+                    "422": {
                         "description": "Ошибка валидации",
                         "content": {
                             "application/json": {
@@ -128,6 +303,26 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Сообщение не найдено"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка отправки сообщения",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ошибка отправки сообщения"
                                         }
                                     },
                                     "type": "object"
