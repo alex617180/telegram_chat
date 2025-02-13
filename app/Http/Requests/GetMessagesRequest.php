@@ -9,25 +9,31 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 class GetMessagesRequest extends FormRequest
 {
     /**
+     * Определяет, авторизован ли пользователь.
+     *
      * @return bool
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->check();
     }
 
     /**
+     * Возвращает правила валидации.
+     *
      * @return array
      */
     public function rules(): array
     {
         return [
-            'page' => ['integer', 'min:1'],
-            'per_page' => ['integer', 'min:1', 'max:1000'],
+            'page' => ['nullable', 'integer', 'min:1'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:1000'],
         ];
     }
 
     /**
+     * Кастомные сообщения ошибок.
+     *
      * @return array
      */
     public function messages(): array
@@ -42,15 +48,15 @@ class GetMessagesRequest extends FormRequest
     }
 
     /**
+     * Обработка ошибок валидации.
+     *
      * @param Validator $validator
      */
-    protected function failedValidation(Validator $validator)
+    protected function failedValidation(Validator $validator): void
     {
-        throw new HttpResponseException(
-            response()->json([
-                'status' => 'error',
-                'errors' => $validator->errors(),
-            ], 422)
-        );
+        throw new HttpResponseException(response()->json([
+            'status' => 'error',
+            'errors' => $validator->errors(),
+        ], 422));
     }
 }

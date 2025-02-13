@@ -2,9 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Message;
 use Illuminate\Console\Command;
-use GuzzleHttp\Client;
 use App\Services\TelegramService;
 use Illuminate\Support\Facades\Log;
 
@@ -37,8 +35,7 @@ class TelegramLongPollCommand extends Command
                 }
             } catch (\Exception $e) {
                 Log::error('Ошибка long polling: ' . $e->getMessage());
-                // Можно сделать задержку перед повторной попыткой
-                sleep(1);
+                sleep(5);
             }
         }
     }

@@ -11,20 +11,8 @@ use App\Repositories\MessageRepository;
 use App\Services\TelegramService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
-/**
- * @OA\OpenApi(
- *     @OA\Info(
- *         title="Telegram Chat API",
- *         version="1.0.0",
- *         description="API для взаимодействия с Telegram ботом"
- *     ),
- *     @OA\Server(
- *         url="https://telegramchat.loc/",
- *         description="Localhost API server"
- *     )
- * )
- */
 class MessageController extends Controller
 {
     private const PER_PAGE = 50;
@@ -39,6 +27,7 @@ class MessageController extends Controller
      *     path="/api/v1/messages",
      *     summary="Получение списка сообщений",
      *     tags={"Сообщения"},
+     *     security={{ "bearerAuth": {} }},
      *     @OA\Parameter(
      *         name="page",
      *         in="query",
@@ -124,6 +113,7 @@ class MessageController extends Controller
      *     path="/api/v1/messages/{id}/reply",
      *     summary="Отправка ответа гостю",
      *     tags={"Сообщения"},
+     *     security={{ "bearerAuth": {} }},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -210,12 +200,13 @@ class MessageController extends Controller
                 'message' => 'Ошибка отправки сообщения'
             ], 500);
         }
-        
+        $user = Auth::user(); // Получаем текущего пользователя
+
         $this->messageRepository->saveMessage([
             'telegram_chat_id'    => $message->telegram_chat_id,
             'telegram_message_id' => $response['result']['message_id'] ?? null,
             'telegram_first_name' => $response['result']['chat']['first_name'] ?? '',
-            // 'user_id'              => auth()->id() ?? null,
+            'user_id'              => $user->id ?? null,
             'datetime'            => Carbon::createFromTimestamp($response['result']['date']),
             'text'                => $request->input('text'),
             'is_from_guest'       => false,
