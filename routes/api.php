@@ -9,7 +9,6 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware('jwt.auth')->group(function () {
         Route::get('/messages', [MessageControllerV1::class, 'index']);
-        Route::post ('/messages', [MessageControllerV1::class, 'store']);
         Route::post('/messages/{id}/reply', [MessageControllerV1::class, 'reply']);
     
         Route::post('/logout', [AuthController::class, 'logout']);

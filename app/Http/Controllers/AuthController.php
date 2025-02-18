@@ -12,7 +12,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
  *     @OA\Info(
  *         title="Telegram Chat API",
  *         version="1.0.0",
- *         description="API для Авторизации"
+ *         description="API для Telegram чата"
  *     ),
  *     @OA\Server(
  *         url="https://telegramchat.loc/",
@@ -49,7 +49,14 @@ class AuthController extends Controller
      *             @OA\Property(property="token", type="string", example="eyJ0eXAiOiJKV1QiLCJhb...")
      *         )
      *     ),
-     *     @OA\Response(response=401, description="Ошибка авторизации")
+     *     @OA\Response(
+     *         response=401,
+     *         description="Неверные учетные данные",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Invalid credentials")
+     *         )
+     *     )
      * )
      */
     public function login(Request $request)
@@ -60,7 +67,7 @@ class AuthController extends Controller
         ]);
 
         if (!$token = JWTAuth::attempt($credentials)) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
         return response()->json(['token' => $token]);
@@ -75,6 +82,13 @@ class AuthController extends Controller
      *     @OA\Response(response=200, description="Выход выполнен",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="Logged out")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Требуется авторизация",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthorized")
      *         )
      *     )
      * )
@@ -105,13 +119,6 @@ class AuthController extends Controller
      *         description="Требуется авторизация",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="Unauthorized")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=403,
-     *         description="Доступ запрещен",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Forbidden")
      *         )
      *     )
      * )

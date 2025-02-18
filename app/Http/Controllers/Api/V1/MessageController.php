@@ -26,7 +26,7 @@ class MessageController extends Controller
      * @OA\Get(
      *     path="/api/v1/messages",
      *     summary="Получение списка сообщений",
-     *     tags={"Сообщения"},
+     *     tags={"Messages"},
      *     security={{ "bearerAuth": {} }},
      *     @OA\Parameter(
      *         name="page",
@@ -93,7 +93,24 @@ class MessageController extends Controller
      *                 )
      *             )
      *         )
-     *     )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Неавторизованный запрос",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Unauthorized")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Ошибка валидации",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Поле per_page должно быть не больше 1000.")
+     *         )
+     *     ),
+
      * )
      */
     public function index(GetMessagesRequest $request)
@@ -112,7 +129,7 @@ class MessageController extends Controller
      * @OA\Post(
      *     path="/api/v1/messages/{id}/reply",
      *     summary="Отправка ответа гостю",
-     *     tags={"Сообщения"},
+     *     tags={"Messages"},
      *     security={{ "bearerAuth": {} }},
      *     @OA\Parameter(
      *         name="id",
@@ -150,11 +167,11 @@ class MessageController extends Controller
      *         )
      *     ),
      *     @OA\Response(
-     *         response=422,
-     *         description="Ошибка валидации",
+     *         response=401,
+     *         description="Неавторизованный запрос",
      *         @OA\JsonContent(
      *             @OA\Property(property="status", type="string", example="error"),
-     *             @OA\Property(property="message", type="string", example="Поле 'text' обязательно")
+     *             @OA\Property(property="message", type="string", example="Unauthorized")
      *         )
      *     ),
      *     @OA\Response(
@@ -163,6 +180,14 @@ class MessageController extends Controller
      *         @OA\JsonContent(
      *             @OA\Property(property="status", type="string", example="error"),
      *             @OA\Property(property="message", type="string", example="Сообщение не найдено")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Ошибка валидации",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Поле 'text' обязательно")
      *         )
      *     ),
      *     @OA\Response(
@@ -200,7 +225,8 @@ class MessageController extends Controller
                 'message' => 'Ошибка отправки сообщения'
             ], 500);
         }
-        $user = Auth::user(); // Получаем текущего пользователя
+
+        $user = Auth::user();
 
         $this->messageRepository->saveMessage([
             'telegram_chat_id'    => $message->telegram_chat_id,

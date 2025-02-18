@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "title": "Telegram Chat API",
-        "description": "API для Авторизации",
+        "description": "API для Telegram чата",
         "version": "1.0.0"
     },
     "servers": [
@@ -15,7 +15,7 @@
         "/api/v1/messages": {
             "get": {
                 "tags": [
-                    "Сообщения"
+                    "Messages"
                 ],
                 "summary": "Получение списка сообщений",
                 "operationId": "6e2b060d9ca7900da7d6994cb985e4e9",
@@ -179,6 +179,46 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Неавторизованный запрос",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Поле per_page должно быть не больше 1000."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -191,7 +231,7 @@
         "/api/v1/messages/{id}/reply": {
             "post": {
                 "tags": [
-                    "Сообщения"
+                    "Messages"
                 ],
                 "summary": "Отправка ответа гостю",
                 "description": "Отправка ответа гостю.",
@@ -275,8 +315,8 @@
                             }
                         }
                     },
-                    "422": {
-                        "description": "Ошибка валидации",
+                    "401": {
+                        "description": "Неавторизованный запрос",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -287,7 +327,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Поле 'text' обязательно"
+                                            "example": "Unauthorized"
                                         }
                                     },
                                     "type": "object"
@@ -308,6 +348,26 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Сообщение не найдено"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Поле 'text' обязательно"
                                         }
                                     },
                                     "type": "object"
@@ -392,7 +452,24 @@
                         }
                     },
                     "401": {
-                        "description": "Ошибка авторизации"
+                        "description": "Неверные учетные данные",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid credentials"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -476,22 +553,6 @@
                                 }
                             }
                         }
-                    },
-                    "403": {
-                        "description": "Доступ запрещен",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Forbidden"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
                     }
                 },
                 "security": [
@@ -513,8 +574,8 @@
     },
     "tags": [
         {
-            "name": "Сообщения",
-            "description": "Сообщения"
+            "name": "Messages",
+            "description": "Messages"
         },
         {
             "name": "Auth",
